@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>User Data </title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1>Create User</h1>
+    <form class="form" id="create-form">
+      <label class="label"  for="name">Name:</label>
+      <input type="text" id="name" name="name" required>
+      <br>
+      <label class="label" for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+      <br>
+      <button type="submit">Submit</button>
+    </form>
+
+    <hr>
+
+    <h1>All Users</h1>
+    <ul id="list"></ul>
+
+    <hr>
+
+    <h1  >Update User</h1>
+    <form class="form" id="update-form">
+      <label class="label"  for="id">ID:</label>
+      <input type="text" id="id" name="id" required>
+      <br>
+      <label class="label" for="name">New Name:</label>
+      <input type="text" id="new-name" name="new-name" required>
+      <br>
+      <label class="label"  for="email">New Email:</label>
+      <input type="email" id="new-email" name="new-email" required>
+      <br>
+      <button type="submit">Submit</button>
+    </form>
+
+    <hr>
+
+    <h1 >Delete User</h1>
+    <form class="form" id="delete-form">
+      <label class="label" for="id">ID:</label>
+      <input type="text" id="delete-id" name="delete-id" required>
+      <br>
+      <button type="submit">Submit</button>
+    </form>
+
+    <script>
+      const createForm = document.querySelector('#create-form');
+      const updateForm = document.querySelector('#update-form');
+      const deleteForm = document.querySelector('#delete-form');
+      const list = document.querySelector('#list');
+
+       createForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.querySelector('#name').value;
+        const email = document.querySelector('#email').value;
+
+        const response = await fetch('http://localhost:8000/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name, email })
+        });
+
+        if (response.ok) {
+          alert('Data created successfully!');
+        } else {
+          alert('Failed to create data!');
+        }
+
+        createForm.reset();
+      });
+
+      updateForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const id = document.querySelector('#id').value;
+        const newName = document.querySelector('#new-name').value;
+        const newEmail = document.querySelector('#new-email').value;
+
+        const response = await fetch(`http://localhost:8000/update/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id, newName, newEmail })
+        });
+
+        if (response.ok) {
+          alert('Data updated successfully!');
+        } else {
+          alert('Failed to update data!');
+        }
+
+        updateForm.reset();
+      });
+
+      
+      deleteForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const id = document.querySelector('#delete-id').value;
+
+        const response = await fetch(`http://localhost:8000/delete/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          alert('Data deleted successfully!');
+        } else {
+          alert('Failed to delete data!');
+        }
+
+        deleteForm.reset();
+    });
+
+    async function getData() {
+    const response = await fetch('http://localhost:8000/');
+    const data = await response.json();
+    list.innerHTML = '';
+    data.forEach((item) => {
+      const li = document.createElement('li');
+      li.innerText = `ID: ${item._id}, Name: ${item.name}, Email: ${item.email}`;
+      list.appendChild(li);
+    });
+  }
+  getData();
+
+    </script>
+</body>
+</html>
